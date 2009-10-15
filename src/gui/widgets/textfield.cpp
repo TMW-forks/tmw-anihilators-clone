@@ -1,8 +1,10 @@
 /*
  *  The Mana World
- *  Copyright (C) 2004  The Mana World Development Team
+ *  Copyright (C) 2001-2009 Wormux Team.
+ *  Copyright (C) 2009 Aethyra Development Team.
+ *  Copyright (C) 2004 The Mana World Development Team
  *
- *  This file is part of The Mana World.
+ *  This file is part of The Mana World based on original code from Aethyra and Wormux
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -32,6 +34,7 @@
 #include "gui/skin.h"
 
 #include "utils/dtor.h"
+#include "utils/copynpaste.h"
 
 #include <guichan/font.hpp>
 
@@ -248,6 +251,23 @@ void TextField::keyPressed(gcn::KeyEvent &keyEvent)
             return;
     }
 
-    keyEvent.consume();
+    // 22 is combination of Ctrl+v
+	if (keyEvent.getKey().getValue() == 22)
+	{
+		std::string temp;
+		if(getClipboard(temp))
+		{
+			int cr = temp.find((char)13);   //check for CR
+			int lf = temp.find((char)10);   //check for LF
+			if (cr>=1)
+				temp=temp.substr(0,cr);
+			if (lf>=1)
+				temp=temp.substr(0,lf);
+			mText.insert(mCaretPosition, temp);
+			mCaretPosition += temp.size();
+		}
+	}
+
+	keyEvent.consume();
     fixScroll();
 }
